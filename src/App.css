@@ -58,13 +58,13 @@ html{
 }
 
 .card-img{
-  display: flex;
+
   max-width: 120px;
   width: 35vw;
   height: 120px;
   object-fit: cover;
-  margin-left: 35%;
-  margin-top: -30%;
+  margin-left: 5%;
+  margin-top: -70%;
   border-radius:100%;
   box-shadow: 0 60px 40px 
   rgb(0, 0, 0 / 8%);
@@ -99,7 +99,7 @@ html{
     flex-direction: column;
   }
   .card-img{
-    margin: -100px 0 30px 25px;
+  
     width: 100%;
     
   }
