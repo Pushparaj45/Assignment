@@ -10,27 +10,28 @@ export default function Form() {
   const [message, setMessage] = useState('');
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Validation
-  const validate = (values) => {
+  const validate = (values, fieldName) => {
     const errors = {};
     const regexN = /^[a-zA-Z ]{3,30}$/;
     const regexE =  /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    const regexP = /^[0-9]{9}$/;
+    const regexP = /^[0-9]{10}$/;
 
-    if (!values.Name || !regexN.test(values.Name)) {
+    if (fieldName !== "Message" && (!values.Name || !regexN.test(values.Name))) {
       errors.Name = 'Invalid Name';
     }
 
-    if (!values.Email || !regexE.test(values.Email)) {
+    if (fieldName !== "Message" && (!values.Email || !regexE.test(values.Email))) {
       errors.Email = 'Invalid Email';
     }
 
-    if (!values.Phone || !regexP.test(values.Phone)) {
+    if (fieldName !== "Message" && (!values.Phone || !regexP.test(values.Phone))) {
       errors.Phone = 'Invalid Phone number';
     }
 
-    if (values.Message.length > 60) {
+    if (fieldName === "Message" && values.Message.length > 60) {
       errors.Message = 'Message length exceeds 60 characters';
     }
 
@@ -52,6 +53,13 @@ export default function Form() {
       .post('https://sheet.best/api/sheets/fbe5c410-f7bb-4d38-b6c7-df15429d71c3', data)
       .then((response) => {
         console.log(response);
+        setIsSubmitted(true);
+        setName('');
+        setEmail('');
+        setPhone('');
+        setMessage('');
+        setFormErrors({});
+        setIsSubmitDisabled(true);
       })
       .catch((error) => {
         console.error('Error occurred:', error);
@@ -59,8 +67,8 @@ export default function Form() {
   };
 
   // Update submit button status based on form validity
-  const updateSubmitButtonStatus = () => {
-    const errors = validate({ Name: name, Email: email, Phone: phone, Message: message });
+  const updateSubmitButtonStatus = (fieldName) => {
+    const errors = validate({ Name: name, Email: email, Phone: phone, Message: message }, fieldName);
     setFormErrors(errors);
     setIsSubmitDisabled(Object.keys(errors).length > 0);
   };
@@ -77,7 +85,7 @@ export default function Form() {
             placeholder="Enter your full name"
             onChange={(e) => {
               setName(e.target.value);
-              updateSubmitButtonStatus();
+              updateSubmitButtonStatus("Name");
             }}
             value={name}
           />
@@ -93,7 +101,7 @@ export default function Form() {
             placeholder="Enter Email"
             onChange={(e) => {
               setEmail(e.target.value);
-              updateSubmitButtonStatus();
+              updateSubmitButtonStatus("Email");
             }}
             value={email}
           />
@@ -109,7 +117,7 @@ export default function Form() {
             placeholder="Enter phone number"
             onChange={(e) => {
               setPhone(e.target.value);
-              updateSubmitButtonStatus();
+              updateSubmitButtonStatus("Phone");
             }}
             value={phone}
           />
@@ -126,7 +134,7 @@ export default function Form() {
             placeholder="Your message"
             onChange={(e) => {
               setMessage(e.target.value);
-              updateSubmitButtonStatus();
+              updateSubmitButtonStatus("Message");
             }}
             value={message}
           />
@@ -136,6 +144,7 @@ export default function Form() {
         <button type="submit" className="form-button" disabled={isSubmitDisabled}>
           Submit
         </button>
+        {isSubmitted && <p>Your response was recorded.</p>}
       </div>
     </form>
   );
